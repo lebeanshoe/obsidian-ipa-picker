@@ -3,8 +3,10 @@
     "parser": "@typescript-eslint/parser",
     "env": { "node": true },
     "plugins": [
-     	 "@typescript-eslint"
-    ],
+		"@typescript-eslint",
+		"jsdoc",
+		"import"
+	],
     "extends": [
 	  	"eslint:recommended",
 	  	"plugin:@typescript-eslint/eslint-recommended",
