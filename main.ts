@@ -7,7 +7,7 @@ interface MyPluginSettings {
 }
 
 const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default'
+mySetting: 'default'
 }
 
 export default class MyPlugin extends Plugin {
