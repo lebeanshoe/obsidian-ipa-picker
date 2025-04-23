@@ -1,4 +1,4 @@
-import {App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting} from "obsidian";
+import {App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, SuggestModal} from "obsidian";
 
 // Remember to rename these classes and interfaces!
 
@@ -89,6 +89,14 @@ export default class MyPlugin extends Plugin {
 	public async saveSettings() {
 		await this.saveData(this.settings);
 	}
+}
+
+class SampleSuggestModel extends SuggestModal<String> {
+	constructor(app: App) {
+		super(app);
+	}
+
+	
 }
 
 class SampleModal extends Modal {
