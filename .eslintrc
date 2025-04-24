@@ -109,7 +109,7 @@
 		],
 		"indent": [
 			"error",
-			"tab",
+			4,
 			{
 				"ignoreComments": true,
 				"SwitchCase": 1
