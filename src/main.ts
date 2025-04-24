@@ -1,20 +1,39 @@
-import {App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, SuggestModal} from "obsidian";
+import {App, DropdownComponent, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, setTooltip, SuggestModal} from "obsidian";
+import SuggestorPopup from "./suggestor";
 
 // Remember to rename these classes and interfaces!
 
-interface MyPluginSettings {
+interface IPAPickerSettings {
 	mySetting: string;
+	layout: string;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: "default"
+const DEFAULT_SETTINGS: IPAPickerSettings = {
+	mySetting: "default",
+	layout: "test"
 };
 
-export default class MyPlugin extends Plugin {
-	public settings: MyPluginSettings;
+export default class IPAPicker extends Plugin {
+	public settings: IPAPickerSettings;
+
+	private _suggestor: SuggestorPopup;
+	private _statusBarItemEl: HTMLElement;
 
 	public async onload() {
 		await this.loadSettings();
+
+		this._suggestor = new SuggestorPopup(this.app);
+
+		this.registerEditorSuggest(this._suggestor);
+
+		this.addCommand({
+			id: "toggle-ipa-suggestions",
+			name: "Toggle IPA Suggestions",
+			callback: () => {
+				this._suggestor.toggleActivation();
+				this._statusBarItemEl.setText(this._suggestor.getActive() ? "on" : "off");
+			}
+		})
 
 		// This creates an icon in the left ribbon.
 		const ribbonIconEl = this.addRibbonIcon("dice", "Sample Plugin", (evt: MouseEvent) => {
@@ -25,8 +44,9 @@ export default class MyPlugin extends Plugin {
 		ribbonIconEl.addClass("my-plugin-ribbon-class");
 
 		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
-		const statusBarItemEl = this.addStatusBarItem();
-		statusBarItemEl.setText("Status Bar Text");
+		this._statusBarItemEl = this.addStatusBarItem();
+		this._statusBarItemEl.setText("off");
+		setTooltip(this._statusBarItemEl, "Status of IPA Suggestions")
 
 		// This adds a simple command that can be triggered anywhere
 		this.addCommand({
@@ -65,8 +85,10 @@ export default class MyPlugin extends Plugin {
 			}
 		});
 
+		
+
 		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SampleSettingTab(this.app, this));
+		this.addSettingTab(new IPAPickerSettingTab(this.app, this));
 
 		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
 		// Using this function will automatically remove the event listener when this plugin is disabled.
@@ -91,14 +113,6 @@ export default class MyPlugin extends Plugin {
 	}
 }
 
-class SampleSuggestModel extends SuggestModal<String> {
-	constructor(app: App) {
-		super(app);
-	}
-
-	
-}
-
 class SampleModal extends Modal {
 	constructor(app: App) {
 		super(app);
@@ -115,10 +129,10 @@ class SampleModal extends Modal {
 	}
 }
 
-class SampleSettingTab extends PluginSettingTab {
-	public plugin: MyPlugin;
+class IPAPickerSettingTab extends PluginSettingTab {
+	public plugin: IPAPicker;
 
-	constructor(app: App, plugin: MyPlugin) {
+	constructor(app: App, plugin: IPAPicker) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
@@ -136,6 +150,18 @@ class SampleSettingTab extends PluginSettingTab {
 				.setValue(this.plugin.settings.mySetting)
 				.onChange(async (value) => {
 					this.plugin.settings.mySetting = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName("Layout")
+			.setDesc("Mapping of keys to IPA characters")
+			.addDropdown((cb) => cb
+				.addOption("default", "default")
+				.addOption("asdas", "asdas")
+				.setValue(this.plugin.settings.layout)
+				.onChange(async (value) => {
+					this.plugin.settings.layout = value;
 					await this.plugin.saveSettings();
 				}));
 	}
