@@ -3,6 +3,7 @@ import { App, Editor, EditorPosition, EditorSuggest, EditorSuggestContext, Edito
 // Remember to rename these classes and interfaces!
 
 interface IPAPickerSettings {
+    [x: string]: any;
 	mySetting: string;
 }
 

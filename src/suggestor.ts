@@ -1,9 +1,17 @@
-import {Editor, EditorPosition, EditorSuggest, EditorSuggestContext, EditorSuggestTriggerInfo, TFile} from "obsidian";
+import {App, Editor, EditorPosition, EditorSuggest,
+    EditorSuggestContext, EditorSuggestTriggerInfo, TFile} from "obsidian";
 import mappings from "./mapping";
+import IPAPicker from "./main";
 
 // TODO: just get single-char suggest working for now
 export default class SuggestorPopup extends EditorSuggest<string> {
+    private plugin: IPAPicker;
     private active: boolean = false;
+
+    constructor(app: App, plugin: IPAPicker) {
+        super(app);
+        this.plugin = plugin;
+    }
 
     public getActive() {
         return this.active;
@@ -14,10 +22,12 @@ export default class SuggestorPopup extends EditorSuggest<string> {
     }
 
     public onTrigger(cursor: EditorPosition, editor: Editor, file: TFile | null): EditorSuggestTriggerInfo | null {
-        const char = editor.getRange({...cursor, ch: cursor.ch - 1}, cursor);
-        if (char === "/" || char === "[") {
-            this.active = !this.active;
-            return null;
+        if (this.plugin.settings.autoMode) {
+            const char = editor.getRange({...cursor, ch: cursor.ch - 1}, cursor);
+            if (char === "/" || char === "[") {
+                this.active = !this.active;
+                return null;
+            }
         }
 
         //  let {

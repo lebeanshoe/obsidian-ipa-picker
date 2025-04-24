@@ -1,16 +1,18 @@
 import {App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, setTooltip} from "obsidian";
 import SuggestorPopup from "./suggestor";
 
-// Remember to rename these classes and interfaces!
+// TODO: Remember to rename these classes and interfaces!
 
 interface IPAPickerSettings {
 	mySetting: string;
 	layout: string;
+    autoMode: boolean;
 }
 
 const DEFAULT_SETTINGS: IPAPickerSettings = {
     mySetting: "default",
-    layout: "test"
+    layout: "test",
+    autoMode: false
 };
 
 export default class IPAPicker extends Plugin {
@@ -24,7 +26,7 @@ export default class IPAPicker extends Plugin {
     public async onload() {
         await this.loadSettings();
 
-        this._suggestor = new SuggestorPopup(this.app);
+        this._suggestor = new SuggestorPopup(this.app, this);
 
         this.registerEditorSuggest(this._suggestor);
 
@@ -163,6 +165,16 @@ class IPAPickerSettingTab extends PluginSettingTab {
                 .setValue(this.plugin.settings.layout)
                 .onChange(async (value) => {
                     this.plugin.settings.layout = value;
+                    await this.plugin.saveSettings();
+                }));
+
+        new Setting(containerEl)
+            .setName("Automatic Mode")
+            .setDesc("Automatically start suggesting IPA characters when a / or [ is typed")
+            .addToggle((cb) => cb
+                .setValue(this.plugin.settings.autoMode)
+                .onChange(async (value) => {
+                    this.plugin.settings.autoMode = value;
                     await this.plugin.saveSettings();
                 }));
     }
