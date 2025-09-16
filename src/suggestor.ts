@@ -53,7 +53,8 @@ export default class SuggestorPopup extends EditorSuggest<string> {
 
     public getSuggestions(context: EditorSuggestContext): string[] | Promise<string[]> {
         console.log("getting with query:", context.query);
-        return mappings[context.query];
+        const layout = this.plugin.settings.layout;
+        return mappings[layout][context.query];
     }
 
     public renderSuggestion(value: string, el: HTMLElement): void {

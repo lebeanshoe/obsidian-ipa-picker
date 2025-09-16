@@ -160,8 +160,10 @@ class IPAPickerSettingTab extends PluginSettingTab {
             .setName("Layout")
             .setDesc("Mapping of keys to IPA characters")
             .addDropdown((cb) => cb
-                .addOption("default", "default")
-                .addOption("asdas", "asdas")
+                .addOption("standard", "Standard")
+                .addOption("place", "By Place")
+                .addOption("type", "By Type")
+                .addOption("lebean", "Temp Custom")
                 .setValue(this.plugin.settings.layout)
                 .onChange(async (value) => {
                     this.plugin.settings.layout = value;
