@@ -1,17 +1,18 @@
 import {App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting} from "obsidian";
+import PickerModal from "./src/Picker";
 
 // Remember to rename these classes and interfaces!
 
-interface MyPluginSettings {
+interface IPAPickerSettings {
 	mySetting: string;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
+const DEFAULT_SETTINGS: IPAPickerSettings = {
 	mySetting: "default"
 };
 
 export default class MyPlugin extends Plugin {
-	public settings: MyPluginSettings;
+	public settings: IPAPickerSettings;
 
 	public async onload() {
 		await this.loadSettings();
@@ -62,6 +63,15 @@ export default class MyPlugin extends Plugin {
 					// This command will only show up in Command Palette when the check function returns true
 					return true;
 				}
+			}
+		});
+
+		this.addCommand({
+			id: "ipa-picker",
+			name: "IPA Picker",
+			hotkeys: [{modifiers: ["Mod", "Shift"], key: "p"}],
+			callback: () => {
+				new PickerModal(this.app).open();
 			}
 		});
 
